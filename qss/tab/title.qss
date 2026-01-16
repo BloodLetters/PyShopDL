@@ -1,0 +1,6 @@
+QLabel {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding-bottom: 6px;
+}
