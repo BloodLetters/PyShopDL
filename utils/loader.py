@@ -2,7 +2,8 @@ import base64
 
 class loader:
     def __init__(self):
-        self.account = {
+        self.accounts = {
+            'Anonymous': 'Anonymous',
             'ruiiixx': 'UzY3R0JUQjgzRDNZ',
             'premexilmenledgconis': 'M3BYYkhaSmxEYg==',
             'vAbuDy': 'Qm9vbHE4dmlw',

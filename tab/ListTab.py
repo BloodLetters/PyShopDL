@@ -44,16 +44,17 @@ class _DownloadWorker(QObject):
 
     finished = Signal(bool, str)  # success, error message
 
-    def __init__(self, app_id: str, workshop_id: str, parent: QObject | None = None) -> None:
+    def __init__(self, app_id: str, workshop_name: str, workshop_id: str, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self._app_id = app_id
         self._workshop_id = workshop_id
+        self._workshop_name = workshop_name
 
     @Slot()
     def run(self) -> None:
         try:
             downloader = WorkshopDownloader()
-            job = WorkshopJob(app_id=self._app_id, pubfile_id=self._workshop_id)
+            job = WorkshopJob(app_id=self._app_id, pubfile_id=self._workshop_id, app_name=self._workshop_name)
             proc = downloader.run_job(job)
 
             completed_marker_found = False
@@ -176,8 +177,8 @@ class ListTab(QWidget):
         overlay_layout.setAlignment(Qt.AlignCenter)
 
         lock_label = QLabel(
-            "DepotDownloaderMod tidak ada\n"
-            "silakan ikuti panduan di Tab Home",
+            "DepotDownloaderMod not found\n"
+            "please follow the guide in the Home Tab",
             self.lock_overlay,
         )
         lock_label.setWordWrap(True)
@@ -338,6 +339,7 @@ class ListTab(QWidget):
 
         app_id = (app_item.text() or "").strip()
         workshop_id = (id_item.text() or "").strip()
+        workshop_name = (self.list_widget.item(row, 2).text() or "").strip()
 
         if not app_id or app_id == "None" or not workshop_id:
             status_item.setText("Error")
@@ -347,7 +349,7 @@ class ListTab(QWidget):
         status_item.setText("Process")
 
         thread = QThread(self)
-        worker = _DownloadWorker(app_id, workshop_id)
+        worker = _DownloadWorker(app_id, workshop_name, workshop_id)
         worker.moveToThread(thread)
 
         self._current_download = (thread, worker)
@@ -357,7 +359,6 @@ class ListTab(QWidget):
         thread.finished.connect(thread.deleteLater)
         worker.finished.connect(worker.deleteLater)
 
-        # Capture row in lambda so we know which row to update
         worker.finished.connect(
             lambda success, error, r=row: self._handle_download_finished(
                 r, success, error

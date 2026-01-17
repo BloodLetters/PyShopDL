@@ -6,13 +6,14 @@ from typing import Optional
 import subprocess
 
 from . import downloader as depot_downloader
-
+from utils.config import Config
 
 @dataclass
 class WorkshopJob:
     """Represents a single Workshop download request."""
 
     app_id: str
+    app_name: str
     pubfile_id: str
 
 
@@ -33,13 +34,26 @@ class WorkshopDownloader:
 
     def build_command(self, job: WorkshopJob) -> list[str]:
         """Build the command-line for DepotDownloaderMod for a given job."""
-
+        auto_rename = Config().get("auto_rename", False)
+        
+        if auto_rename:
+            return [
+                str(self.exe_path),
+                "-app",
+                job.app_id,
+                "-pubfile",
+                job.pubfile_id,
+                "-dir",
+                "depots/" + job.app_name,
+            ]
+            
         return [
             str(self.exe_path),
             "-app",
             job.app_id,
             "-pubfile",
             job.pubfile_id,
+            "-dir", "depots/" + job.pubfile_id,
         ]
 
     def run_job(self, job: WorkshopJob) -> subprocess.Popen:

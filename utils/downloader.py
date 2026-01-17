@@ -89,10 +89,6 @@ def read_installed_version(install_dir: Path) -> str | None:
 
 
 def parse_version_from_tag(tag_name: str) -> str:
-    """
-    Ambil versi dari tag GitHub.
-    Contoh: DepotDownloaderMod_1.5.3 → 1.5.3
-    """
     try:
         return tag_name.split("_")[1]
     except IndexError:

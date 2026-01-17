@@ -41,7 +41,6 @@ class Metadata:
         return await self._fetch(workshop_id)
 
     async def getData(self, workshop_id: str) -> tuple[str, str, str]:
-        """Mengambil sekaligus nama, size, dan app id agar hanya 1x request."""
         details = await self.get(workshop_id)
 
         size_bytes = float(details.get("file_size", 0))
@@ -49,7 +48,6 @@ class Metadata:
         size_text = f"{size_mb:.1f}MB"
 
         name_text = details.get("title", "")
-        # Steam Web API: field biasanya bernama "consumer_appid"
         app_id_value = details.get("consumer_app_id", "")
         app_id_text = str(app_id_value) if app_id_value not in (None, "") else ""
 
