@@ -62,11 +62,8 @@ async def download_release_rar(cache_dir: Path = CACHE_DIR) -> tuple[Path, str]:
         version = parse_version_from_tag(tag_name)
 
         rar_path = cache_dir / RAR_ASSET_NAME
-        print(f"⬇ Downloading {RAR_ASSET_NAME} ({tag_name})")
-
         await download_file(session, asset["browser_download_url"], rar_path)
 
-    print(f"✅ Download selesai: {rar_path}")
     return rar_path, version
 
 def write_version_file(install_dir: Path, version: str) -> None:
@@ -102,7 +99,6 @@ def prepare_directory(path: Path) -> None:
 
 
 def extract_rar(rar_path: Path, extract_dir: Path) -> None:
-    print("📦 Mengekstrak Release.rar...")
     prepare_directory(extract_dir)
 
     with rarfile.RarFile(rar_path) as rar:
@@ -140,28 +136,17 @@ def install_from_rar(
     extract_rar(rar_path, EXTRACT_DIR)
 
     exe_path = find_executable(EXTRACT_DIR, EXE_NAME)
-    print(f"✅ Ditemukan: {exe_path}")
 
     copy_install_files(exe_path.parent, install_dir)
 
     write_version_file(install_dir, version)
 
     shutil.rmtree(EXTRACT_DIR, ignore_errors=True)
-
     final_exe = install_dir / EXE_NAME
-    print(f"✅ Instalasi selesai: {final_exe}")
-    print(f"📝 Version ditulis: {version}")
-
     return final_exe
 
 
 async def download_and_install() -> Path:
-    """Download and install DepotDownloaderMod if a newer version exists.
-
-    If the latest GitHub release version matches the installed version and the
-    executable is already present, the download and extraction are skipped.
-    """
-
     project_root = Path(__file__).resolve().parent.parent
     install_dir = project_root / INSTALL_DIR_NAME
     exe_path = install_dir / EXE_NAME
@@ -179,18 +164,14 @@ async def download_and_install() -> Path:
 
         # If already installed and up to date, skip re-downloading
         if installed_version == latest_version and exe_path.is_file():
-            print(f"⚡ DepotDownloaderMod is already up to date (v{latest_version}). Skipping download.")
             return exe_path
 
         asset = find_rar_asset(release)
 
         rar_path = cache_dir / RAR_ASSET_NAME
-        print(f"⬇ Downloading {RAR_ASSET_NAME} ({tag_name})")
 
         await download_file(session, asset["browser_download_url"], rar_path)
-
-    print(f"✅ Download selesai: {rar_path}")
     return install_from_rar(rar_path, latest_version)
 
-if __name__ == "__main__":
-    asyncio.run(download_and_install())
+# if __name__ == "__main__":
+#     asyncio.run(download_and_install())

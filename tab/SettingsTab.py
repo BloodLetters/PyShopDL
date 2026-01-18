@@ -45,6 +45,7 @@ class SettingsTab(QWidget):
             qss_file.close()
 
         self.auto_rename_checkbox = QCheckBox("Auto rename folder to mod name", panel)
+        self.allow_multi_thread_checkbox = QCheckBox("Allow Multiple Thread Download", panel)
 
         account_layout = QHBoxLayout()
         account_label = QLabel("Account", self)
@@ -65,6 +66,7 @@ class SettingsTab(QWidget):
 
         panel_layout.addWidget(title)
         panel_layout.addWidget(self.auto_rename_checkbox)
+        panel_layout.addWidget(self.allow_multi_thread_checkbox)
         panel_layout.addLayout(account_layout)
 
         # --- Bottom bar with Save button ---
@@ -88,6 +90,9 @@ class SettingsTab(QWidget):
         auto_rename = Config().get("auto_rename", False)
         self.auto_rename_checkbox.setChecked(bool(auto_rename))
 
+        allow_multi_thread = Config().get("multi_thread", False)
+        self.allow_multi_thread_checkbox.setChecked(bool(allow_multi_thread))
+
         selected_account = Config().get("account", "Anonymous")
         if selected_account is not None:
             index = self.account_combo.findText(str(selected_account))
@@ -97,6 +102,7 @@ class SettingsTab(QWidget):
     def save_settings(self):
         config = {
             "auto_rename": self.auto_rename_checkbox.isChecked(),
+            "multi_thread": self.allow_multi_thread_checkbox.isChecked(),
             "account": self.account_combo.currentText() or None,
         }
 

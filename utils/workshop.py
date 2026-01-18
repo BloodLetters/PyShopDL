@@ -7,6 +7,7 @@ import subprocess
 
 from . import downloader as depot_downloader
 from utils.config import Config
+from utils.loader import loader
 
 @dataclass
 class WorkshopJob:
@@ -35,6 +36,19 @@ class WorkshopDownloader:
     def build_command(self, job: WorkshopJob) -> list[str]:
         """Build the command-line for DepotDownloaderMod for a given job."""
         auto_rename = Config().get("auto_rename", False)
+        username = Config().get("account", "Anonymous")
+        if username and username.lower() != "anonymous":
+            return [
+                str(self.exe_path),
+                "-app",
+                job.app_id,
+                "-pubfile",
+                job.pubfile_id,
+                "-dir",
+                "depots/" + job.app_name,
+                "-username " + username,
+                "-password " + loader().getPassword(username),
+            ]
         
         if auto_rename:
             return [
