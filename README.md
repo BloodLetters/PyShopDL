@@ -1,10 +1,17 @@
-> [!WARNING]
-> PyShopDL still on development
+<h2 align="center">PyShopDL</h2>
 
-<center><h2>PyShopDL</h2></center>
-[![Latest release](https://img.shields.io/github/v/release/BloodLetters/PyShopDL)](https://github.com/BloodLetters/PyShopDL/releases/latest)
-[![Last commit](https://img.shields.io/github/last-commit/BloodLetters/PyShopDL)](https://github.com/BloodLetters/PyShopDL/commits/main)
-[![Build status](https://github.com/BloodLetters/PyShopDL/actions/workflows/Build.yml/badge.svg)](https://github.com/BloodLetters/PyShopDL/actions/workflows/Build.yml)
+<p align="center">
+  <a href="https://github.com/BloodLetters/PyShopDL/releases/latest">
+    <img src="https://img.shields.io/github/v/release/BloodLetters/PyShopDL?logo=github">
+  </a>
+  <a href="https://github.com/BloodLetters/PyShopDL/commits/main">
+    <img src="https://img.shields.io/github/last-commit/BloodLetters/PyShopDL?logo=git">
+  </a>
+  <a href="https://github.com/BloodLetters/PyShopDL/actions/workflows/Build.yml">
+    <img src="https://github.com/BloodLetters/PyShopDL/actions/workflows/Build.yml/badge.svg?branch=main">
+  </a>
+</p>
+
 
 PyShopDL is a desktop client for downloading Steam Workshop items using a modern Fluent-style interface. It wraps the third‑party [DepotDownloaderMod](https://github.com/SteamAutoCracks/DepotDownloaderMod) command‑line tool in a simple GUI so you can queue workshop IDs, inspect their metadata, and download them sequentially without touching a terminal or official steam client.
 
