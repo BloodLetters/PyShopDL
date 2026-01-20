@@ -1,4 +1,4 @@
-name: Build and Release PyShopDL
+name: Build Workflow
 
 on:
   workflow_dispatch:
