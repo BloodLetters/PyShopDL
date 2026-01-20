@@ -1,0 +1,52 @@
+name: Build and Release PyShopDL
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller rarfile
+
+      - name: Run build.bat
+        shell: bash
+        run: |
+          ./build.bat
+
+      - name: Verify built executable
+        run: |
+          if (-Not (Test-Path "build/PyShopDL.exe")) {
+            Write-Error "build/PyShopDL.exe not found after build.bat"
+          }
+        shell: pwsh
+
+      - name: Create GitHub Release and upload PyShopDL.exe
+        uses: softprops/action-gh-release@v1
+        with:
+          name: PyShopDL v${{ github.event.inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          files: build/PyShopDL.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

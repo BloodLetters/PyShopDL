@@ -1,9 +1,8 @@
-import asyncio
-import aiohttp
-import os
 import shutil
+import sys
 from pathlib import Path
 
+import aiohttp
 import rarfile
 
 # =========================
@@ -16,11 +15,25 @@ GITHUB_API_LATEST = f"https://api.github.com/repos/{REPO}/releases/latest"
 RAR_ASSET_NAME = "Release.rar"
 EXE_NAME = "DepotDownloaderMod.exe"
 
-CACHE_DIR = Path("cache")
-EXTRACT_DIR = CACHE_DIR / "_extracted"
 INSTALL_DIR_NAME = "DepotDownloaderMod"
 
 CHUNK_SIZE = 64 * 1024
+
+
+def _get_app_root() -> Path:
+    if getattr(sys, "frozen", False):  # PyInstaller or similar
+        return Path(sys.executable).resolve().parent
+
+    # __file__ -> .../utils/downloader.py -> project root is parent of parent
+    return Path(__file__).resolve().parent.parent
+
+
+def get_install_dir() -> Path:
+    return _get_app_root() / INSTALL_DIR_NAME
+
+
+def _get_cache_dir() -> Path:
+    return _get_app_root() / "cache"
 
 
 # =========================
@@ -51,7 +64,8 @@ async def download_file(
             async for chunk in response.content.iter_chunked(CHUNK_SIZE):
                 file.write(chunk)
 
-async def download_release_rar(cache_dir: Path = CACHE_DIR) -> tuple[Path, str]:
+async def download_release_rar(cache_dir: Path | None = None) -> tuple[Path, str]:
+    cache_dir = cache_dir or _get_cache_dir()
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     async with aiohttp.ClientSession() as session:
@@ -125,35 +139,33 @@ def copy_install_files(source_dir: Path, target_dir: Path) -> None:
 def install_from_rar(
     rar_path: Path,
     version: str,
-    cache_dir: Path = CACHE_DIR,
 ) -> Path:
     if not rar_path.is_file():
         raise FileNotFoundError(f"RAR file not found: {rar_path}")
 
-    project_root = Path(__file__).resolve().parent.parent
-    install_dir = project_root / INSTALL_DIR_NAME
+    install_dir = get_install_dir()
+    extract_dir = _get_cache_dir() / "_extracted"
 
-    extract_rar(rar_path, EXTRACT_DIR)
+    extract_rar(rar_path, extract_dir)
 
-    exe_path = find_executable(EXTRACT_DIR, EXE_NAME)
+    exe_path = find_executable(extract_dir, EXE_NAME)
 
     copy_install_files(exe_path.parent, install_dir)
 
     write_version_file(install_dir, version)
 
-    shutil.rmtree(EXTRACT_DIR, ignore_errors=True)
+    shutil.rmtree(extract_dir, ignore_errors=True)
     final_exe = install_dir / EXE_NAME
     return final_exe
 
 
 async def download_and_install() -> Path:
-    project_root = Path(__file__).resolve().parent.parent
-    install_dir = project_root / INSTALL_DIR_NAME
+    install_dir = get_install_dir()
     exe_path = install_dir / EXE_NAME
 
     installed_version = read_installed_version(install_dir)
 
-    cache_dir = CACHE_DIR
+    cache_dir = _get_cache_dir()
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     async with aiohttp.ClientSession() as session:

@@ -150,12 +150,15 @@ class HomeTab(QWidget):
         open_install_dir_btn.clicked.connect(self._on_open_dir_clicked)
 
     def _get_depot_exe_path(self) -> str:
-        project_root = os.path.dirname(os.path.dirname(__file__))
-        return os.path.join(
-            project_root,
-            depot_downloader.INSTALL_DIR_NAME,
-            depot_downloader.EXE_NAME,
-        )
+        """Return path to DepotDownloaderMod.exe next to the app/.exe.
+
+        Uses the same logic as utils.downloader so that when the app is
+        packaged (PyInstaller), the DepotDownloaderMod folder is created
+        in the same directory as the bundled .exe.
+        """
+
+        install_dir = depot_downloader.get_install_dir()
+        return str(install_dir / depot_downloader.EXE_NAME)
 
     def _get_depot_version(self) -> str | None:
         install_dir = os.path.dirname(self._get_depot_exe_path())

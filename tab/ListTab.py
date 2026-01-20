@@ -403,12 +403,8 @@ class ListTab(QWidget):
             self.lock_overlay.hide()
 
     def _get_depot_exe_path(self) -> str:
-        project_root = os.path.dirname(os.path.dirname(__file__))
-        return os.path.join(
-            project_root,
-            depot_downloader.INSTALL_DIR_NAME,
-            depot_downloader.EXE_NAME,
-        )
+        install_dir = depot_downloader.get_install_dir()
+        return str(install_dir / depot_downloader.EXE_NAME)
 
     def showEvent(self, event) -> None:  # type: ignore[override]
         super().showEvent(event)
