@@ -17,7 +17,8 @@ PyShopDL is a desktop client for downloading Steam Workshop items using a modern
 - Fetching metadata from the Steam Web API (name, size, app ID)
 - Status tracking per item (Loading, Ready, Queue, Process, Complete, Error)
 - Sequential download queue using DepotDownloaderMod
-- Multi threaded download
+- Multi threaded download (Coming Soon but in plan)
+- Batch Download
 
 ## Screenshots
 <img src="Assets/Screenshot/home.png" alt="Home tab" width="500"> <img src="Assets/Screenshot/downloader.png" alt="Home tab" width="500">
